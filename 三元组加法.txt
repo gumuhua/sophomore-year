@@ -1,0 +1,76 @@
+#include <stdio.h>
+struct s{
+    int r;
+    int c;
+    int data;
+}x[1000],y[1000],sum[1000];
+int main (){
+    int m,n;
+    scanf ("%d %d",&m,&n);
+    for (int i=0;i<m;i++){
+        scanf ("%d %d %d",&x[i].r,&x[i].c,&x[i].data);
+    }
+    for (int i=0;i<n;i++){
+        scanf ("%d %d %d",&y[i].r,&y[i].c,&y[i].data);
+    }
+        int j,i,k;
+        i=j=k=0;
+        while (i<m&&j<n){
+            if (x[i].r<y[j].r){
+                sum[k].r=x[i].r;
+                sum[k].c=x[i].c;
+                sum[k].data=x[i].data;
+                k++;
+                i++;
+            }else if (x[i].r==y[j].r){
+                if (x[i].c==y[j].c){
+                    if (x[i].data+y[j].data!=0){
+                        sum[k].r=x[i].r;
+                        sum[k].c=x[i].c;
+                        sum[k].data=x[i].data+y[j].data;
+                        k++;
+                    }
+                    i++;
+                    j++;
+                }else if (x[i].c<y[j].c){
+                    sum[k].r=x[i].r;
+                    sum[k].c=x[i].c;
+                    sum[k].data=x[i].data;
+                    k++;
+                    i++;
+                }else{
+                    sum[k].r=y[j].r;
+                    sum[k].c=y[j].c;
+                    sum[k].data=y[j].data;
+                    k++;
+                    j++;
+                }
+            }else{
+                sum[k].r=y[j].r;
+                sum[k].c=y[j].c;
+                sum[k].data=y[j].data;
+                k++;
+                j++;
+            }
+        }
+        
+        
+        while (i<m){
+            sum[k].r=x[i].r;
+            sum[k].c=x[i].c;
+            sum[k].data=x[i].data;
+            k++;
+            i++;
+        }
+        while (j<n){
+            sum[k].r=y[j].r;
+            sum[k].c=y[j].c;
+            sum[k].data=y[j].data;
+            k++;
+            j++;
+        }
+        
+    for (int i=0;i<k;i++){
+        printf ("%d %d %d\n",sum[i].r,sum[i].c,sum[i].data);
+    }
+}

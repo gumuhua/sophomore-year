@@ -1,0 +1,54 @@
+#include <stdio.h>
+#include <string.h>
+void getnext(char b[],int next[]){
+    next[0]=-1;
+    int i=0,j=-1;
+    int lenb=strlen(b);    //strlen返回是无符号数，不可以与负数比较！！！
+    while (i<lenb){
+        if (j==-1||b[i]==b[j]){
+            j++;
+            i++;
+            next[i]=j;
+        }else{
+            j=next[j];
+        }
+    }
+}
+int KMP(char a[],char b[],int next[]){
+    int i=0,j=0;
+    int lena=strlen(a);
+    int lenb=strlen(b);
+    while (i<lena&&j<lenb){
+        if (j==-1||a[i]==b[j]){
+            i++;
+            j++;
+        }else{
+            j=next[j];
+        }
+    }
+    if (j>=lenb){
+        return i-lenb;
+    }
+    return -1;
+}
+int main (){
+    char a[1000000];
+    gets(a);
+    int n;
+    int f;
+    int next[1000000];
+    scanf ("%d",&n);
+    getchar();
+    for (int i=0;i<n;i++){
+        f=0;
+        char b[10000000];
+        scanf ("%s",b);
+        getnext(b,next);
+        f=KMP(a,b,next);
+        if (f!=-1){
+            puts(a+f);
+        }else{
+            printf ("Not Found\n");
+        }
+    }
+}

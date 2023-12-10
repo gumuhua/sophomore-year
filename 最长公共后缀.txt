@@ -1,0 +1,41 @@
+#include<stdio.h>
+#include <string.h>
+int compare(char a[],char b[]){
+    int k=0,n=0;
+    int len_a=strlen(a),len_b=strlen(b);
+    for (int i=len_a-1;i>=0;i--){
+        if (a[i]==b[len_b-1-k]){
+            k++;
+        }else{
+            break;
+        }
+    }
+
+    return k;
+}
+int main(){
+    int n;
+    int min=0,t;
+    char a[1000][1000];
+    while (scanf ("%d",&n)&&n){
+        for (int i=0;i<n;i++){
+            scanf ("%s",a[i]);
+        }
+        for (int i=0;i<n-1;i++){
+            if (i==0){
+                min=compare(a[i],a[i+1]);
+            }else{
+                t=compare(a[i],a[i+1]);
+                if (t<min){
+                    min=t;
+                }
+            }
+        }
+        if (min==0){
+            printf ("\n");
+        }else{
+            int len=strlen(a[0]);
+            puts(a[0]+len-min);
+        }
+    }
+}

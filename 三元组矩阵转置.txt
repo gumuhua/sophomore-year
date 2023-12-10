@@ -1,0 +1,28 @@
+#include <stdio.h>
+struct s{
+    int r;
+    int c;
+    int data;
+}tup[1000],y[100];
+int main (){
+    int n,m,num;
+    int a[1000][1000]={0};
+    scanf ("%d %d %d",&m,&n,&num);
+    for (int i=0;i<num;i++){
+        scanf ("%d %d %d",&tup[i].r,&tup[i].c,&tup[i].data);
+    }
+    int k=0;
+    for (int i=0;i<n;i++){   //列查找
+        for (int j=0;j<num;j++){
+            if (i==tup[j].c){
+                y[k].r=tup[j].c;
+                y[k].c=tup[j].r;
+                y[k].data=tup[j].data;
+                k++;
+            }
+        }
+    }
+    for (int i=0;i<k;i++){
+        printf ("%d %d %d\n",y[i].r,y[i].c,y[i].data);
+    }
+}

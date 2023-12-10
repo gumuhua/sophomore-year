@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+typedef struct s{
+    int num;
+    char thing[100];
+    char location[100];
+    struct s *left;
+    struct s *right;
+}tree;
+tree *creat(int n){
+    tree *root=NULL,*p,*h;
+    for (int i=0;i<n;i++){
+        p=(tree *)malloc(sizeof(tree));
+        p->left=NULL;
+        p->right=NULL;
+        scanf ("%d %s %s",&p->num,p->thing,p->location);
+        if (root==NULL){
+            root=p;
+        }else{
+            h=root;
+            while (1){
+                if(h->num>p->num){
+                    if (h->left==NULL){
+                        h->left=p;
+                        break;
+                    }else{
+                        h=h->left;
+                    }
+                }else{
+                    if (h->right==NULL){
+                        h->right=p;
+                        break;
+                    }else{
+                        h=h->right;
+                    }
+                }
+            }
+        }
+    }
+    return root;
+}
+void display(tree *root){
+    if (root!=NULL){
+        display(root->left);
+        printf ("%d ",root->num);
+        display(root->right);
+    }
+}
+int find(tree *root,int n){
+    if (root!=NULL){
+        if (root->num==n){
+            printf ("\n%s %s",root->thing,root->location);
+            return 1;
+        }else{
+            find(root->left,n);
+            find(root->right,n);
+        }
+    }
+}
+tree* findMin(tree* node) {
+    while (node->left != NULL) {
+        node = node->left;
+    }
+    return node;
+}
+
+tree* delet(tree* root, int num) {
+    if (root == NULL) {
+        return root;
+    }
+    if (num < root->num) {
+        root->left = delet(root->left, num);
+    } else if (num > root->num) {
+        root->right = delet(root->right, num);
+    } else {
+        if (root->left == NULL) {
+            tree* temp = root->right;
+            free(root);
+            return temp;
+        } else if (root->right == NULL) {
+            tree* temp = root->left;
+            free(root);
+            return temp;
+        }
+        tree* temp = findMin(root->right);
+        root->num = temp->num;
+        root->right = delet(root->right, temp->num);
+    }
+    return root;
+}
+
+int main (){
+    int n,m;
+    scanf ("%d",&n);
+    scanf ("%d",&m);
+    tree *root;
+    root=creat(n);
+    display(root);
+    if (find(root,m)!=1){
+        printf ("\nNO find");
+    }
+    delet(root,m);
+    display(root);
+}
+
+
+

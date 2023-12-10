@@ -1,0 +1,111 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+struct s{
+    int num[100];
+    char ch[100];
+    int top1;
+    int top2;
+};
+
+void clear(struct s *stack){
+    stack->top1=-1;
+    stack->top2=-1;
+}
+int pop1(struct s *stack){
+    int n;
+    n=stack->num[stack->top1];
+    stack->top1--;
+    return n;
+}
+char pop2(struct s *stack){
+    char c;
+    c=stack->ch[stack->top2];
+    stack->top2--;
+    return c;
+}
+void push1(struct s *stack,int n){
+    stack->top1++;
+    stack->num[stack->top1]=n;
+}
+void push2(struct s *stack,char c){
+    stack->top2++;
+    stack->ch[stack->top2]=c;
+}
+int compare(char c){
+    if (c=='+'||c=='-'){
+        return 1;
+    }else if (c=='*'||c=='/'){
+        return 2;
+    }else{
+        return 0;
+    }
+}
+int compute(int a,int b,char c){
+    int s;
+    switch(c){
+        case '+':s=a+b;break;
+        case '-':s=a-b;break;
+        case '*':s=a*b;break;
+        case '/':s=a/b;break;
+    }
+    return s;
+}
+int main (){
+    struct s *stack;
+    stack=(struct s *)malloc(sizeof(struct s));
+    int a=0;
+    char c;
+    char b[1000];
+    int answer=0;
+    int f=0;
+    while (scanf ("%s",b)!=EOF){
+        clear(stack);
+        answer=0;
+        for (int i=0;b[i]!='\0';i++){
+            if (b[i]>='0'&&b[i]<='9'){
+                a=a*10+b[i]-'0';
+                f=1;
+                continue;
+            }else{
+                c=b[i];
+            }
+            if (f==1){
+                push1(stack,a);
+                f=0;
+                a=0;
+            }
+            if (c=='#'){
+                break;
+            }else if (c=='('){
+                push2(stack,c);
+            }else if (c==')'){
+                int s;
+                char t;
+                t=pop2(stack);
+                while (t!='('){
+                    s=compute(pop1(stack),pop1(stack),t);
+                    push1(stack,s);
+                    t=pop2(stack);
+                }
+            }else{
+                if (compare(stack->ch[stack->top2])<compare(c)||stack->top2==-1){
+                    push2(stack,c);
+                }else{
+                    int s;
+                    s=compute(pop1(stack),pop1(stack),pop2(stack));
+                    push1(stack,s);
+                    push2(stack,c);
+                }
+            }
+        }
+        while (1){
+            if (stack->top2==-1){
+                printf ("%d\n",answer);
+                break;
+            }
+            answer=compute(pop1(stack),pop1(stack),pop2(stack));
+            push1(stack,answer);
+        }
+    }
+}

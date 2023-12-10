@@ -1,0 +1,281 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define max 100
+typedef struct s{
+	char site;
+	struct s *next;
+	int time;
+}node;
+typedef struct ss{
+	node data[max];
+	int num; 
+	int side;
+}list;
+int fangwen[max]={0};
+
+list* creat(list *H,int LIST[max][max]);
+void printflist (list *H);
+list* addnode(list *H,int A[max][max]);
+void addedge(int LIST[max][max],int A[max][max],int n);
+void input(int n,int A[max][max]);
+void print(int n,int A[max][max]);
+void initialize(int fangwen[max],list *H);
+void DFS(list *H,char s);
+list *changetime(char N,char M,int newdata,int LIST[max][max],list *H);
+void dijikstra(list *H,int v,int w,int LIST[max][max]); 
+void f();
+
+int main (){
+	list *H;
+	H=(list *)malloc(sizeof(list));
+	int LIST[max][max];
+	int n,m;
+	int t;
+	f();
+	printf ("请输入操作数："); 
+	while (scanf ("%d",&t)&&t!=0){
+		if (t==1){
+			scanf ("%d %d",&n,&m);
+			H->num=n;
+			H->side=m;
+			input(n,LIST);
+			H=creat(H,LIST);
+			printflist(H);
+		}else if (t==2){
+			int A[max][max];
+			H->num++;
+			input(H->num,A);
+			H=addnode(H,A);
+			addedge(LIST,A,H->num);
+		}else if (t==3){
+			print(H->num,LIST);
+			printflist(H);
+		}else if (t==4){
+			char N,M;
+			int newdata;
+			getchar();
+			scanf ("%c %c %d",&N,&M,&newdata);
+			printf ("%c %c %d\n",N,M,newdata);
+			H=changetime(N,M,newdata,LIST,H);
+		}else if (t==5){
+			char N;
+			getchar();
+			scanf ("%c",&N);
+			DFS(H,N);
+			printf ("\n");
+			initialize(fangwen,H);
+		}else if (t==6){
+			char v,w;
+			getchar ();
+			scanf ("%c %c",&v,&w);
+			dijikstra(H,v-'A',w-'A',LIST);
+		}else {
+			continue;
+		}
+		printf ("请输入操作数："); 
+	}
+	return 0;
+}
+
+list* creat(list *H,int LIST[max][max]){
+	int n;
+	n=H->num;
+	node *p,*t;
+	for (int i=0;i<n;i++){
+		p=(node *)malloc(sizeof(node));
+		p->site=i+'A';
+		p->next=NULL;
+		H->data[i].next=p; 
+	}
+	for (int i=0;i<n;i++){
+		t=H->data[i].next;
+		for (int j=0;j<n;j++){
+			if (LIST[i][j]!=0&&LIST[i][j]<99){
+				p=(node *)malloc(sizeof(node));
+				p->next=NULL;
+				p->site='A'+j;
+				p->time=LIST[i][j];
+				t->next=p;
+				t=p;
+			}
+		}
+	}
+	return H;
+}
+void printflist (list *H){
+	int n=H->num;
+	for (int i=0;i<n;i++){
+		for (node *j=H->data[i].next;j;j=j->next){
+			printf ("%c ",j->site);
+		}
+		printf ("\n");
+	}
+}
+list* addnode(list *H,int A[max][max]){
+	node *p,*t;
+	int n=H->num;
+	for (int i=0;i<n;i++){
+		if (i!=n-1){
+			t=H->data[i].next;
+			while (t->next){
+				t=t->next;
+			}
+			int j=n-1; 
+			if (A[i][j]!=0&&A[i][j]<99){
+				p=(node *)malloc(sizeof(node));
+				p->next=NULL;
+				p->site='A'+j;
+				p->time=A[i][j];
+				t->next=p;
+				t=p;
+			}
+		}else{
+			p=(node *)malloc(sizeof(node));
+			p->site=i+'A';
+			p->next=NULL;
+			H->data[i].next=p;
+			t=H->data[i].next;
+			for (int j=0;j<n;j++){
+				if (A[i][j]!=0&&A[i][j]<99){
+					p=(node *)malloc(sizeof(node));
+					p->next=NULL;
+					p->site='A'+j;
+					p->time=A[i][j];
+					t->next=p;
+					t=p;
+				}
+			}
+		}
+	}
+	printf ("添加成功！\n");
+	return H; 
+}
+void addedge(int LIST[max][max],int A[max][max],int n){
+	for (int i=0;i<n;i++){
+		for (int j=0;j<n;j++){
+			LIST[i][j]=A[i][j];
+		}
+	}
+}
+void input(int n,int A[max][max]){
+	for (int i=0;i<n;i++){
+		for (int j=0;j<n;j++){
+			scanf ("%d",&A[i][j]);
+		}
+	}
+}
+void print(int n,int A[max][max]){
+	printf ("  ");
+	for (int k=0;k<n;k++){
+		printf ("%-4c",'A'+k);
+	}
+	printf ("\n");
+	for (int i=0;i<n;i++){
+		printf ("%c ",'A'+i);
+		for (int j=0;j<n;j++){
+			printf ("%-3d ",A[i][j]);
+		}
+		printf ("\n");
+	}
+}
+void initialize(int fangwen[max],list *H){
+	for (int i=0;i<H->num;i++){
+		fangwen[i]=0;
+	}
+	
+}
+void DFS(list *H,char s){
+	node *p;
+	int x=s-'A';
+	fangwen[x]=1;
+	printf ("%c ",s);
+	p=H->data[x].next;
+	while (p!=NULL){
+		if (fangwen[p->site-'A']==0){
+			DFS(H,p->site);
+		}
+		p=p->next;
+	}
+}
+list *changetime(char N,char M,int newdata,int LIST[max][max],list *H){
+	int n=N-'A';
+	int m=M-'A';
+	LIST[n][m]=newdata;
+	node *p=H->data[n].next;
+	printf ("n=%d m=%d\n",n,m);
+	for (node *i=p;p;p=p->next){
+		if (p->site==M){
+			p->time=newdata;
+		}
+	}
+	return H;
+}
+void dijikstra(list *H,int v,int w,int LIST[max][max]){
+	int z=0;
+	for (int i=0;i<H->num;i++){
+		if(v==i){
+			z=1;
+		}
+	}
+	if (z==0){
+		printf ("没有找到%c站点",v+'A');
+		return;
+	}
+	int len[max],pre[max];
+	int find[max]={0};
+	for (int i=0;i<H->num;i++){
+		len[i]=LIST[v][i];
+		if(LIST[v][i]<99){
+			pre[i]=v;
+		}else{
+			pre[i]=-1;
+		}
+	}
+	find[v]=1;pre[v]=v;
+	int min_len,t;
+	for (int i=0;i<H->num-1;i++){
+		min_len=99;
+		for (int j=0;j<H->num;j++){
+			if(find[j]==0&&len[j]<min_len){
+				t=j;
+				min_len=len[j];
+			}
+		}
+		find[t]=1;
+		for (int j=0;j<H->num;j++){
+			if (find[j]==0){
+				if(LIST[t][j]<99&&len[t]+LIST[t][j]<len[j]){
+					len[j]=len[t]+LIST[t][j];
+					pre[j]=t;
+				}
+			}
+		} 
+	}
+	int k=w,i=0;
+	int stack[max];
+	int top=-1;
+	while (k!=v&&i<H->num-1){
+		top++;
+		stack[top]=k;
+		i++;
+		k=pre[k];
+	}
+	stack[++top]=v;
+	if (i>=H->num-1){
+		printf ("%c不能到达%c\n",v+'A',w+'A');
+	}else{
+		printf ("%c到达%c的路径：",v+'A',w+'A');
+		while (top!=-1){
+			printf ("%c ",stack[top--]+'A');
+		}
+		printf ("\n");
+	}
+
+}
+void f(){
+	printf ("操作数表:\n"); 
+	printf ("1创建公交路线表       2:添加一个站点\n");
+	printf ("3:输出邻接矩阵和路线  4:修改站点的信息\n");
+	printf ("5:DFS深度遍历         6:查找最短路径\n");
+	printf ("0:退出程序            other:无效数，继续输入\n"); 
+}
